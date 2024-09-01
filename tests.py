@@ -15,7 +15,9 @@ class TestVectorDB(unittest.TestCase):
 
     def setUp(self):
         # Initialize VectorDB with embedding dimension of 384
-        self.db = VectorDB(embedding_dim=384, index_type='Flat', collections_name='test_collection')
+        self.db = VectorDB(
+            embedding_dim=384, index_type="Flat", collections_name="test_collection"
+        )
 
         # Example phrases and their embeddings
         self.phrases = [
@@ -23,7 +25,7 @@ class TestVectorDB(unittest.TestCase):
             "Machine learning algorithms are powerful tools.",
             "Natural language processing enables computers to understand text.",
             "Deep learning models can handle large datasets.",
-            "Reinforcement learning optimizes decision-making through rewards."
+            "Reinforcement learning optimizes decision-making through rewards.",
         ]
         self.embeddings = [self.embed_text(phrase) for phrase in self.phrases]
 
@@ -40,31 +42,47 @@ class TestVectorDB(unittest.TestCase):
         results = self.db.search(query_vector=query_embedding, top_k=3)
 
         self.assertGreater(len(results), 0, "No results found for the query.")
-        self.assertIsInstance(results[0], Vector, "Search results should be instances of Vector.")
+        self.assertIsInstance(
+            results[0], Vector, "Search results should be instances of Vector."
+        )
 
     def test_save_and_load(self):
         self.db.save()
 
         # Initialize a new database instance
-        new_db = VectorDB(embedding_dim=384, index_type='Flat', collections_name='test_collection')
+        new_db = VectorDB(
+            embedding_dim=384, index_type="Flat", collections_name="test_collection"
+        )
         new_db.load()
 
         # Test that the data was loaded correctly
-        self.assertEqual(len(new_db.vectors), len(self.phrases),
-                         "The number of vectors loaded does not match the number of saved vectors.")
-        self.assertEqual(len(new_db.id_map), len(self.phrases),
-                         "The id_map size does not match the number of saved vectors.")
+        self.assertEqual(
+            len(new_db.vectors),
+            len(self.phrases),
+            "The number of vectors loaded does not match the number of saved vectors.",
+        )
+        self.assertEqual(
+            len(new_db.id_map),
+            len(self.phrases),
+            "The id_map size does not match the number of saved vectors.",
+        )
 
     def test_empty_db(self):
-        empty_db = VectorDB(embedding_dim=384, index_type='Flat', collections_name='empty_collection')
+        empty_db = VectorDB(
+            embedding_dim=384, index_type="Flat", collections_name="empty_collection"
+        )
         query_phrase = "Some random text."
         query_embedding = self.embed_text(query_phrase)
         results = empty_db.search(query_vector=query_embedding, top_k=3)
 
-        self.assertEqual(len(results), 0, "Search results should be empty for an empty database.")
+        self.assertEqual(
+            len(results), 0, "Search results should be empty for an empty database."
+        )
 
     def test_invalid_query_embedding(self):
-        db_with_data = VectorDB(embedding_dim=384, index_type='Flat', collections_name='test_collection')
+        db_with_data = VectorDB(
+            embedding_dim=384, index_type="Flat", collections_name="test_collection"
+        )
         valid_embedding = self.embed_text("Test phrase")
         db_with_data.create(id="test", text="Test phrase", embeddings=valid_embedding)
 
@@ -75,23 +93,50 @@ class TestVectorDB(unittest.TestCase):
             db_with_data.search(query_vector=invalid_query_embedding, top_k=3)
 
     def test_index_type(self):
-        db_flat = VectorDB(embedding_dim=384, index_type='Flat', collections_name='flat_test')
-        db_ivf = VectorDB(embedding_dim=384, index_type='IVF', collections_name='ivf_test')
-        db_hnsw = VectorDB(embedding_dim=384, index_type='HNSW', collections_name='hnsw_test')
+        db_flat = VectorDB(
+            embedding_dim=384, index_type="Flat", collections_name="flat_test"
+        )
+        db_ivf = VectorDB(
+            embedding_dim=384, index_type="IVF", collections_name="ivf_test"
+        )
+        db_hnsw = VectorDB(
+            embedding_dim=384, index_type="HNSW", collections_name="hnsw_test"
+        )
 
-        self.assertIsInstance(db_flat.index, faiss.IndexFlatL2, "Index type should be IndexFlatL2 for 'Flat'.")
-        self.assertIsInstance(db_ivf.index, faiss.IndexIVFFlat, "Index type should be IndexIVFFlat for 'IVF'.")
-        self.assertIsInstance(db_hnsw.index, faiss.IndexHNSWFlat, "Index type should be IndexHNSWFlat for 'HNSW'.")
+        self.assertIsInstance(
+            db_flat.index,
+            faiss.IndexFlatL2,
+            "Index type should be IndexFlatL2 for 'Flat'.",
+        )
+        self.assertIsInstance(
+            db_ivf.index,
+            faiss.IndexIVFFlat,
+            "Index type should be IndexIVFFlat for 'IVF'.",
+        )
+        self.assertIsInstance(
+            db_hnsw.index,
+            faiss.IndexHNSWFlat,
+            "Index type should be IndexHNSWFlat for 'HNSW'.",
+        )
 
     def test_search_performance(self):
         """Test search performance with varying numbers of embeddings and report average search time per iteration"""
-        scales = [1_000, 10_000, 100_000, 1_000_000]  # Number of embeddings to add in each test
+        scales = [
+            1_000,
+            10_000,
+            100_000,
+            1_000_000,
+        ]  # Number of embeddings to add in each test
         num_searches = 1_000  # Number of searches to perform for each scale
 
         for scale in scales:
 
             # Reinitialize the database for each scale
-            self.db = VectorDB(embedding_dim=384, index_type='Flat', collections_name=f'performance_test_{scale}')
+            self.db = VectorDB(
+                embedding_dim=384,
+                index_type="Flat",
+                collections_name=f"performance_test_{scale}",
+            )
 
             print(f"Generating with {scale} embeddings...")
             upload_time_start = time.time()
@@ -117,10 +162,16 @@ class TestVectorDB(unittest.TestCase):
             # Calculate and print average search time
             average_search_time = np.mean(search_times)
             print(
-                f"Scale {scale}: Average search time for {num_searches} searches: {average_search_time * 1000:.2f} ms")
+                f"Scale {scale}: Average search time for {num_searches} searches: {average_search_time * 1000:.2f} ms"
+            )
 
             # Check that average search time is within an acceptable range (e.g., less than 50ms)
-            self.assertLess(average_search_time, 0.05, f"Average search time exceeds 50ms for scale {scale}.")
+            self.assertLess(
+                average_search_time,
+                0.05,
+                f"Average search time exceeds 50ms for scale {scale}.",
+            )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
