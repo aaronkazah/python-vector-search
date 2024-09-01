@@ -16,7 +16,7 @@ class TestVectorDB(unittest.TestCase):
     def setUp(self):
         # Initialize VectorDB with embedding dimension of 384
         self.db = VectorDB(
-            embedding_dim=384, index_type="Flat", collections_name="test_collection"
+            embedding_dim=384, index_type="Flat", name="test_db"
         )
 
         # Example phrases and their embeddings
@@ -51,7 +51,7 @@ class TestVectorDB(unittest.TestCase):
 
         # Initialize a new database instance
         new_db = VectorDB(
-            embedding_dim=384, index_type="Flat", collections_name="test_collection"
+            embedding_dim=384, index_type="Flat", name="test_db"
         )
         new_db.load()
 
@@ -69,7 +69,7 @@ class TestVectorDB(unittest.TestCase):
 
     def test_empty_db(self):
         empty_db = VectorDB(
-            embedding_dim=384, index_type="Flat", collections_name="empty_collection"
+            embedding_dim=384, index_type="Flat", name="test_db"
         )
         query_phrase = "Some random text."
         query_embedding = self.embed_text(query_phrase)
@@ -81,7 +81,7 @@ class TestVectorDB(unittest.TestCase):
 
     def test_invalid_query_embedding(self):
         db_with_data = VectorDB(
-            embedding_dim=384, index_type="Flat", collections_name="test_collection"
+            embedding_dim=384, index_type="Flat", name="test_db"
         )
         valid_embedding = self.embed_text("Test phrase")
         db_with_data.create(id="test", text="Test phrase", embeddings=valid_embedding)
@@ -94,13 +94,13 @@ class TestVectorDB(unittest.TestCase):
 
     def test_index_type(self):
         db_flat = VectorDB(
-            embedding_dim=384, index_type="Flat", collections_name="flat_test"
+            embedding_dim=384, index_type="Flat", name="flat_test"
         )
         db_ivf = VectorDB(
-            embedding_dim=384, index_type="IVF", collections_name="ivf_test"
+            embedding_dim=384, index_type="IVF", name="ivf_test"
         )
         db_hnsw = VectorDB(
-            embedding_dim=384, index_type="HNSW", collections_name="hnsw_test"
+            embedding_dim=384, index_type="HNSW", name="hnsw_test"
         )
 
         self.assertIsInstance(
@@ -135,7 +135,7 @@ class TestVectorDB(unittest.TestCase):
             self.db = VectorDB(
                 embedding_dim=384,
                 index_type="Flat",
-                collections_name=f"performance_test_{scale}",
+                name=f"performance_test_{scale}",
             )
 
             print(f"Generating with {scale} embeddings...")

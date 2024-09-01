@@ -23,16 +23,16 @@ class VectorDB:
         self,
         embedding_dim: int,
         index_type: str = "Flat",
-        collections_name: str = "default",
+        name: str = "default",
     ):
         self.embedding_dim = embedding_dim
         self.index_type = index_type
         self.index = self._create_index()
         self.vectors = []
         self.id_map = {}
-        self.collections_name = collections_name
-        self.index_file = f".bin/{collections_name}_index.bin"
-        self.data_file = f".bin/{collections_name}_data.pkl"
+        self.name = name
+        self.index_file = f".bin/{name}_index.bin"
+        self.data_file = f".bin/{name}_data.pkl"
         os.makedirs(".bin", exist_ok=True)  # Ensure .bin directory exists
 
     def _create_index(self):

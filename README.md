@@ -38,7 +38,7 @@ from embedding import Embedder
 
 # Initialize the embedder and vector database
 embedder = Embedder()
-db = VectorDB(embedding_dim=384, index_type='Flat', collections_name='example_collection')
+db = VectorDB(embedding_dim=384, index_type='Flat', name='example_db')
 
 # Create vectors 
 text = "Sample text for embedding."
@@ -67,7 +67,7 @@ The vector database has been tested for performance with varying numbers of embe
 
 These results demonstrate the database's ability to handle large-scale searches efficiently.
 
-Upload time for 1,000,000 embeddings is approximately 4.5 seconds.
+Upload time for 1,000,000 embeddings is approximately 4.5 seconds (4446.84 ms)
 
 These tests were ran on a Macbook Pro M1 with 32GB of RAM
 
